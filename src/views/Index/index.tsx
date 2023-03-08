@@ -3,8 +3,9 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme, Button, Modal } from 'antd';
 import kun from '../../assets/kunkun.jpg';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
-import './index.css'
+import { useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import './index.css';
 //引入自定义hooks
 import useMenus from './hooks/useMenus';
 const { Header, Sider, Content } = Layout;
@@ -52,6 +53,7 @@ const Index: React.FC = () => {
           mode="inline"
           defaultSelectedKeys={['1']}
           items={items}
+          onSelect={(keyPath) => { navigate(`/index/${keyPath.key}`) }}
         />
       </Sider>
       <Layout className="site-layout">
@@ -75,7 +77,7 @@ const Index: React.FC = () => {
             background: colorBgContainer,
           }}
         >
-          Content
+          <Outlet/>
         </Content>
       </Layout>
     </Layout>
