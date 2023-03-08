@@ -17,3 +17,5 @@ function RouterViews(){
         </Routes>
     )
 }
+
+export default RouterViews;
