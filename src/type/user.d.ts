@@ -27,3 +27,14 @@ interface MenuListType {
     path:string,
     children:MenuListType[]
 }
+
+//用户列表
+interface DataType {
+    key: string;
+    id: number;
+    username: string;
+    email: string;
+    mobile: number;
+    role_name: string;
+    mg_state: boolean;
+}

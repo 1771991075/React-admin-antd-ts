@@ -65,7 +65,7 @@ const Index: React.FC = () => {
             !collapsed && <MenuFoldOutlined style={{ fontSize: '20px' }} onClick={() => setCollapsed(!collapsed)} />
           }
           <Button type="primary" onClick={exit}>退出</Button>
-          <Modal title="提示" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <Modal title="提示" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText={'确认'} cancelText={'取消'}>
             <p>是否退出登录?</p>
           </Modal>
         </Header>
