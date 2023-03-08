@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // 引入用户登录api
 import { userLogin } from '../../api/user';
+import { useDispatch } from 'react-redux';
+import userActions from '../../redux/actions/userActions';
 import './index.css'
 export default function Login() {
+    let disPatch = useDispatch();
     let navigate = useNavigate();
     // 定义用户名状态
     let [username, setUsername] = useState<string>('')
@@ -29,6 +32,11 @@ export default function Login() {
             // 登录成功将 token 存储到本地
             localStorage.setItem("token", res.data.data.token);
             localStorage.setItem("username", res.data.data.username);
+            // 提交actions更改redux中存储的token username
+            disPatch(userActions({
+                username:res.data.data.username,
+                token:res.data.data.token
+            }))
             setTimeout(() => {
                 navigate("/index")
             }, 1000);
