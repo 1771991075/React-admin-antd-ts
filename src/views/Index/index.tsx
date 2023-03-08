@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme ,Button } from 'antd';
 import kun from '../../assets/kunkun.jpg';
 import { useSelector } from 'react-redux';
 import './index.css'
@@ -43,6 +43,7 @@ const Index: React.FC = () => {
           {
             !collapsed && <MenuFoldOutlined style={{ fontSize: '20px' }} onClick={() => setCollapsed(!collapsed)} />
           }
+          <Button type="primary" onClick={()=>localStorage.removeItem('token')}>退出</Button>
         </Header>
         <Content
           style={{

@@ -12,3 +12,8 @@
     font-size: 17px;
     margin: 20px 0px;
 }
+.ant-layout-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
