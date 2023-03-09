@@ -44,3 +44,11 @@ interface Items{
     title:JSX.Element | string,
     href?:string
 }
+
+//添加用户类型
+interface SetUsersType{
+    username:string,
+    password:string,
+    email?:string,
+    mobile?:string | number
+}

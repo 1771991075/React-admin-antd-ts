@@ -8,9 +8,12 @@ let getMenus = ():Promise<any>=> http(`menus`,'get')
 //请求用户列表
 let getUserList = (pagenum:number,pagesize:number,query?:string) =>http(`users?pagenum=${pagenum}&pagesize=${pagesize}&query=`,'get')
 
+//添加用户
+let setUsers = (data:SetUsersType):Promise<any> =>http(`users`,'post',data)
 
 export {
     userLogin,
     getMenus,
-    getUserList
+    getUserList,
+    setUsers
 }
