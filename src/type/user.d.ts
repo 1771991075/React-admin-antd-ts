@@ -38,3 +38,9 @@ interface DataType {
     role_name: string;
     mg_state: boolean;
 }
+
+//首页面包屑导航
+interface Items{
+    title:JSX.Element | string,
+    href?:string
+}
