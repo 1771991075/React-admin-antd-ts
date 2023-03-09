@@ -38,7 +38,7 @@ export default function Login() {
                 token:res.data.data.token
             }))
             setTimeout(() => {
-                navigate("/index")
+                navigate("/index/home")
             }, 1000);
             return
         }
