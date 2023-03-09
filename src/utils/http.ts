@@ -1,11 +1,13 @@
 import axios ,{AxiosHeaders} from 'axios';
+import store from '../redux';
 axios.defaults.baseURL = 'http://106.12.150.223:8090/api/private/v1/';
 axios.defaults.timeout = 10000;
 
 //请求拦截
 axios.interceptors.request.use((config:any)=>{
     //设置请求头
-    let token = localStorage.getItem('token')
+    // let token = localStorage.getItem('token')
+    let token = store.getState().userReducer.token
     config.headers.Authorization = token
     return config
 })
