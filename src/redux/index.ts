@@ -2,10 +2,12 @@ import { legacy_createStore as createStore, compose, combineReducers, applyMiddl
 // 引入用户reducer
 import userReducer from './reducer/userReducer';
 // 引入中间件
-import ReduxThunk from 'redux-thunk'
+import ReduxThunk from 'redux-thunk';
+import navReducer from './reducer/navReducer';
 
 let reducer = combineReducers({
-    userReducer
+    userReducer,
+    navReducer
 })
 
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
