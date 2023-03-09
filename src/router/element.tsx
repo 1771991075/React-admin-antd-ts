@@ -13,6 +13,7 @@ let Params = lazy(() => import('../views/Params'))
 let Categories = lazy(() => import('../views/Categories'))
 let Orders = lazy(() => import('../views/Orders'))
 let Reports = lazy(() => import('../views/Reports'))
+let NotFound = lazy(()=>import('../component/NotFound'))
 
 let element:RouterObject[] = [
     {
@@ -76,6 +77,11 @@ let element:RouterObject[] = [
         path: '/',
         element: <Navigate to={'/index/home'}></Navigate>,
         author: true
+    },
+    {
+        path: '*',
+        element: <Suspense fallback='loading...'><NotFound /></Suspense>,
+        author: false
     },
 ]
 
