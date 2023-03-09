@@ -1,7 +1,7 @@
-import { Input, Button, Modal, Table, Pagination, Form ,message} from 'antd';
+import { Input, Button, Modal, Table, Pagination, Form, message } from 'antd';
 import type { PaginationProps } from 'antd';
 import { useState, useEffect } from 'react';
-import { getUserList, setUsers } from '../../api/user';
+import { getUserList, setUsers, delUsers } from '../../api/user';
 //引入自定义hooks
 import usersListTabel from './hooks/usersList';
 import './index.css';
@@ -16,10 +16,43 @@ export default function Users() {
     //当前页数和当前每页数量
     let [page, setPage] = useState(1)
     let [pageSize, setPageSize] = useState(5)
+    //修改用户信息
+    let [changeUsername, setChangeUsername] = useState('')
+    let [changeEmail, setChangeEmail] = useState('')
+    let [changeMobile, setChangeMobile] = useState('')
     //添加用户模态框
     const [isModalOpen, setIsModalOpen] = useState(false);
+    //修改用户模态框
+    const [changeUserModalOpen, setChangeUserModalOpen] = useState(false);
+    //删除用户模态框
+    const [isDelModalOpen, setIsDelModalOpen] = useState(false);
+    let [delUserId,setDelUserId] = useState(0)
+    //点击显示添加用户模态框
     const showModal = () => { setIsModalOpen(true) };
     const handleOk = () => { form.submit() };
+    const handleCancel = () => { setIsModalOpen(false) };
+    //点击显示修改用户模态框
+    const showChangeUserModal = (record: any) => {
+        setChangeUsername(record.username)
+        setChangeEmail(record.email)
+        setChangeMobile(record.mobile)
+        setChangeUserModalOpen(true)
+    };
+    //修改用户信息输入框清空
+    const removeChangeUser = () => {
+        setChangeUsername('')
+        setChangeEmail('')
+        setChangeMobile('')
+    }
+    const handleChangeUserOk = () => {
+        removeChangeUser()
+        setChangeUserModalOpen(false);
+
+    };
+    const handleChangeUserCancel = () => {
+        removeChangeUser()
+        setChangeUserModalOpen(false);
+    };
     //发送请求添加用户
     const setUser = async (data: SetUsersType) => {
         let res = await setUsers(data)
@@ -30,7 +63,6 @@ export default function Users() {
         }
         error(res.data.meta.msg)
     }
-    const handleCancel = () => { setIsModalOpen(false) };
     //添加用户
     const [form] = Form.useForm();
     //提交成功之后的回调
@@ -46,27 +78,57 @@ export default function Users() {
 
     const [messageApi, contextHolder] = message.useMessage();
     //提示框
-    const success = (msg:string) => {
+    const success = (msg: string) => {
         messageApi.open({
             type: 'success',
             content: msg,
         });
     };
-    const error = (msg:string) => {
+    const error = (msg: string) => {
         messageApi.open({
             type: 'error',
             content: msg,
         });
     };
-    const warning = (msg:string) => {
+    const warning = (msg: string) => {
         messageApi.open({
-          type: 'warning',
-          content: msg,
+            type: 'warning',
+            content: msg,
         });
     };
+    //删除用户模态框
+    const showDelModal = (id:number) => {
+        setDelUserId(id)
+        setIsDelModalOpen(true);
+    };
+    const handleDelOk = () => {
+        delUser(delUserId)
+        setIsDelModalOpen(false);
+    };
+    const handleDelCancel = () => {
+        setIsDelModalOpen(false);
+    };
+    //删除用户
+    let delUser = async (id: number) => {
+        let res = await delUsers(id)
+        if (res.data.meta.status === 200) {
+            success(res.data.meta.msg)
+            let idx = data.findIndex((item:DataType):boolean=>{
+                return item.id === id
+            })
+            if(idx !== -1){
+                let newState = JSON.parse(JSON.stringify(data))
+                newState.splice(idx,1)
+                setData(newState)
+                setData1(newState)
+            }
+            return
+        }
+        error(res.data.meta.msg)
+    }
 
     //调用自定义hooks
-    let columns = usersListTabel()
+    let columns = usersListTabel(showChangeUserModal, showDelModal)
     //点击切换页码
     let onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setPage(page)
@@ -144,6 +206,46 @@ export default function Users() {
                 <Table columns={columns} dataSource={data1} sticky={true} bordered={true} pagination={false} style={{ marginTop: '20px' }} rowKey={(record): any => record.id} scroll={{ x: 1200 }} />
                 <Pagination showQuickJumper defaultPageSize={pageSize} current={page} total={total} pageSizeOptions={[5, 10, 20, 50]} onChange={onChange} showSizeChanger={true} style={{ marginTop: '20px' }} />
             </div>
+            <Modal title="修改信息" open={changeUserModalOpen} onOk={handleChangeUserOk} onCancel={handleChangeUserCancel} okText={'确认修改'} cancelText={'取消'}>
+                <Form
+                    form={form}
+                    name="basic"
+                    labelCol={{ span: 5 }}
+                    wrapperCol={{ span: 16 }}
+                    style={{ maxWidth: 600 }}
+                    initialValues={{ username: changeUsername, email: changeEmail, mobile: changeMobile, remember: true }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                >
+                    <Form.Item
+                        label="用户名"
+                        name="username"
+                        rules={[{ required: true, message: '请输入用户名!' }]}
+                    >
+                        <Input disabled={true} />
+                    </Form.Item>
+                    <Form.Item
+                        label="邮箱"
+                        name="email"
+                        rules={[{ required: true, message: '请输入邮箱!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="手机号"
+                        name="mobile"
+                        rules={[{ required: true, message: '请输入手机号!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal title="注意" open={isDelModalOpen} onOk={handleDelOk} onCancel={handleDelCancel} okText={'确认删除'} cancelText={'取消'}>
+                <p>您确定要删除当前用户吗?</p>
+            </Modal>
+
         </div>
     )
 }

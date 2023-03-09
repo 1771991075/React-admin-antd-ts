@@ -3,7 +3,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
 
 
-let usersListTabel = () => {
+let usersListTabel = (showChangeUserModal:any,showDelModal:any) => {
   const columns: ColumnsType<DataType> = [
     {
       title: '用户ID',
@@ -48,8 +48,8 @@ let usersListTabel = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" key={record.key}>
-          <Button type="primary" size='small' icon={<FormOutlined />}>编辑</Button>
-          <Button size='small' type="primary" danger icon={<DeleteOutlined />}>删除</Button>
+          <Button type="primary" size='small' icon={<FormOutlined />} onClick={()=>showChangeUserModal(record)}>编辑</Button>
+          <Button size='small' type="primary" danger icon={<DeleteOutlined /> } onClick={()=>showDelModal(record.id)}>删除</Button>
           <Button type="primary" size='small' icon={<SettingOutlined />}>分配角色</Button>
         </Space>
       ),

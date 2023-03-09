@@ -11,9 +11,13 @@ let getUserList = (pagenum:number,pagesize:number,query?:string) =>http(`users?p
 //添加用户
 let setUsers = (data:SetUsersType):Promise<any> =>http(`users`,'post',data)
 
+//删除单个用户
+let delUsers = (id:number|string) =>http(`users/${id}`,'delete')
+
 export {
     userLogin,
     getMenus,
     getUserList,
-    setUsers
+    setUsers,
+    delUsers
 }
