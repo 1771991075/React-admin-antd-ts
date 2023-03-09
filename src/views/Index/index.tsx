@@ -2,16 +2,18 @@ import React, { useEffect, useState ,useMemo} from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined ,HomeOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme, Button, Modal, Breadcrumb } from 'antd';
 import kun from '../../assets/kunkun.jpg';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation ,NavLink } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import navList from '../../utils/navList';
 import './index.css';
 //引入自定义hooks
 import useMenus from './hooks/useMenus';
+import navActions from '../../redux/actions/navActions';
 const { Header, Sider, Content } = Layout;
 
 const Index: React.FC = () => {
+  let dispatch = useDispatch()
   let location = useLocation()
   let navigate = useNavigate()
   //左侧导航栏显示隐藏
@@ -34,7 +36,6 @@ const Index: React.FC = () => {
     }
     navlist.forEach(item=>{
       let obj = {
-        href:'',
         title:item
       }
       list.push(obj)
@@ -71,7 +72,9 @@ const Index: React.FC = () => {
     let pathName = location.pathname.split('/')[2]
     setDefaultSelectedKeys([pathName])
     // 根据当前路由获取对应navList
-
+    let list:string[] = navList[pathName];
+    // 更改状态
+    dispatch(navActions(list))
     // 根据二级路由路径更新默认展开菜单
     switch (pathName) {
       case 'users':
@@ -113,7 +116,6 @@ const Index: React.FC = () => {
           selectedKeys={defaultSelectedKeys}
           items={items}
           onClick={(item) => {
-            console.log(item);
             // 跳转对应页面
             navigate(item.key)
             // 更新当前选中的二级菜单

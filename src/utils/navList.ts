@@ -2,7 +2,7 @@ interface NavListType {
     [key:string]:string[]
 }
 
-let navList = {
+let navList:NavListType = {
     "users":["用户管理","用户列表"],
     "roles":["权限管理","角色列表"],
     "rights":["权限管理","权限列表"],
