@@ -19,11 +19,17 @@ interface RolesFormType {
     roleDesc?:string
 }
 
-//权限列表类型
+//角色权限列表
 interface RightsDataType {
     id:number,
     authName:string,
     level:string,
     pid:number,
     path:string | null
+}
+
+//权限列表类型
+interface RolesType {
+    value:number,
+    label:string
 }

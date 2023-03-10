@@ -12,9 +12,13 @@ let delRoles = (id:number):Promise<any> =>http(`roles/${id}`,'delete')
 //获取权限列表
 let getRightsList = ():Promise<any> =>http(`rights/list`,'get')
 
+//更改用户角色
+let updateRoles = (id:number,data:object) =>http(`users/${id}/role`,'put',data)
+
 export {
     getRolesList,
     setRoles,
     delRoles,
-    getRightsList
+    getRightsList,
+    updateRoles
 }

@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useState, useEffect, useRef } from 'react';
 import { getUserList, setUsers, delUsers, updateUserState ,updateUsers } from '../../api/user';
 import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
+import DealUser from './component/DealUser';
 import './index.css';
 const { Search } = Input;
 export default function Users() {
@@ -55,7 +56,7 @@ export default function Users() {
                 <Space size="middle" >
                     <Button type="primary" size='small' icon={<FormOutlined />} onClick={() => showChangeUserModal(record)}>编辑</Button>
                     <Button size='small' type="primary" danger icon={<DeleteOutlined />} onClick={() => showDelModal(record.id)}>删除</Button>
-                    <Button type="primary" size='small' icon={<SettingOutlined />}>分配角色</Button>
+                    <Button type="primary" size='small' icon={<SettingOutlined/>} onClick={()=>dealRef.current.init(record) }>分配角色</Button>
                 </Space>
             ),
         },
@@ -72,6 +73,8 @@ export default function Users() {
     const [form] = Form.useForm();
     //创建修改用户表单实例
     const changeForm:{current:any} = useRef();
+    //创建分配权限模态框
+    const dealRef:{current:any} = useRef();
     let [record,setRecord] = useState<DataType | null>(null);
     //添加用户模态框
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,12 +129,10 @@ export default function Users() {
     }
     //提交成功之后的回调
     const onFinish = (values: any) => {
-        console.log('Success:', values);
         setUser(values)
     };
     //提交失败后的回调
     const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
         messageApi.warning(errorInfo.errorFields[0].errors)
     };
 
@@ -292,6 +293,12 @@ export default function Users() {
             <Modal title="注意" open={isDelModalOpen} onOk={handleDelOk} onCancel={handleDelCancel} okText={'确认删除'} cancelText={'取消'}>
                 <p>您确定要删除当前用户吗?</p>
             </Modal>
+            <DealUser ref={dealRef} over={(res:ResponsType)=>{
+                if(res.data.meta.status === 200){
+                    messageApi.success(res.data.meta.msg)
+                    getDataList()
+                }
+            }}/>
         </div>
     )
 }
