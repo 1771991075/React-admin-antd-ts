@@ -270,14 +270,19 @@ export default function Users() {
                     <Form.Item
                         label="邮箱"
                         name="email"
-                        rules={[{ required: true, message: '请输入邮箱!' }]}
+                        rules={[{ required: true, message: '请输入邮箱!', type:'email' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         label="手机号"
                         name="mobile"
-                        rules={[{ required: true, message: '请输入手机号!' }]}
+                        rules={[{ required: true, message: '请输入手机号!',validator:(_,value:number | string)=>{
+                            if(/^1[3456789]\d{9}$/.test(value as string)){
+                                return Promise.resolve()
+                            }
+                            return  Promise.reject("请输入正确手机号码")
+                        } }]}
                     >
                         <Input />
                     </Form.Item>
