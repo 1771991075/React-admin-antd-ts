@@ -9,7 +9,7 @@ function DealUser(props: {over:Function}, ref: any) {
     let [isShow, setIsShow] = useState(false)
     //当前选中的角色id
     let [rolesId, setRolesId] = useState(0)
-    //当前选中的用户id
+    //当前选中的用户
     let [record,setRecord] = useState<DataType | null>(null)
 
     //父组件点击显示子组件的状态

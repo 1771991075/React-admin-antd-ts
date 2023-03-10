@@ -15,10 +15,14 @@ let getRightsList = ():Promise<any> =>http(`rights/list`,'get')
 //更改用户角色
 let updateRoles = (id:number,data:object) =>http(`users/${id}/role`,'put',data)
 
+//编辑角色
+let changeRoles = (id:number,data:RolesFormType) =>http(`roles/${id}`,'put',data)
+
 export {
     getRolesList,
     setRoles,
     delRoles,
     getRightsList,
-    updateRoles
+    updateRoles,
+    changeRoles
 }

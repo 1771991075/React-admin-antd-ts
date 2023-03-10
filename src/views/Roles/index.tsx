@@ -1,38 +1,90 @@
-import { Button, Table, Modal, Form, Input, message } from 'antd';
+import { Button, Table, Modal, Form, Input, message, Space } from 'antd';
 import { useEffect, useState } from 'react';
-import { getRolesList, setRoles,delRoles } from '../../api/roles';
-import rolesListHook from './hooks/rolesList';
+import { getRolesList, setRoles, delRoles, changeRoles } from '../../api/roles';
+import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
 
 export default function Roles() {
+  const columns: ColumnsType<RolesDataType> = [
+    { title: '角色ID', dataIndex: 'id' },
+    { title: '角色名称', dataIndex: 'roleName' },
+    { title: '角色描述', dataIndex: 'roleDesc' },
+    {
+      title: '操作',
+      dataIndex: '',
+      key: 'x',
+      render: (_, record: RolesDataType) => (
+        <Space size="middle">
+          <Button type="primary" size='small' icon={<FormOutlined />} onClick={() => { showModal(record) }}>编辑</Button>
+          <Button size='small' type="primary" danger icon={<DeleteOutlined />} onClick={() => showDelModal(record.id)}>删除</Button>
+          <Button type="primary" size='small' icon={<SettingOutlined />}>分配权限</Button>
+        </Space>
+      )
+    },
+  ];
+  //全局提示
+  const [messageApi, contextHolder] = message.useMessage();
   //角色列表
   let [data, setDate] = useState([])
   const [form] = Form.useForm();
+  //当前选中的角色
+  let [record, setRecord] = useState<RolesDataType | null>(null)
   //当前选中的角色id
-  let [rolesId,setRolesId] = useState(0)
+  let [rolesId, setRolesId] = useState(0)
   //添加角色模态框
   const [isModalOpen, setIsModalOpen] = useState(false);
   //删除用户模态框
   const [isDelModalOpen, setIsDelModalOpen] = useState(false);
   //打开模态框
-  const showModal = () => { setIsModalOpen(true) };
+  const showModal = (record?: RolesDataType) => {
+    setIsModalOpen(true)
+    //如果有角色对象，编辑
+    if (record) {
+      setRecord(record)
+      form.setFieldsValue({
+        roleName: record.roleName,
+        roleDesc: record.roleDesc
+      })
+    } else {
+      //没有角色对象就添加
+      setRecord(null)
+    }
+  };
   const handleOk = () => {
     //提交表单
     form.submit()
   };
   //关闭模态框
-  const handleCancel = () => { setIsModalOpen(false) };
+  const handleCancel = () => {
+    form.resetFields()
+    setIsModalOpen(false)
+  };
   //表单成功回调
   const onFinish = async (values: RolesFormType) => {
-    let res = await setRoles(values)
-    if (res.data.meta.status === 201) {
-      success(res.data.meta.msg)
-      setIsModalOpen(false);
+    if (record) {
+      let ress = await changeRoles(record.id, values)
+      if (ress.data.meta.status === 200) {
+        messageApi.success(ress.data.meta.msg)
+        form.resetFields()
+        setIsModalOpen(false)
+        getRolesList1()
+        return
+      }
+      messageApi.error(ress.data.meta.msg)
+    } else {
+      let res = await setRoles(values)
+      if (res.data.meta.status === 201) {
+        messageApi.success(res.data.meta.msg)
+        form.resetFields()
+        setIsModalOpen(false);
+        getRolesList1()
+        return
+      }
+      messageApi.error(res.data.meta.msg)
     }
-    error(res.data.meta.msg)
   };
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-    error(errorInfo.errorFields[0].errors)
+    messageApi.error(errorInfo.errorFields[0].errors)
   };
   //删除用户模态框
   const showDelModal = (id: number) => {
@@ -46,13 +98,11 @@ export default function Roles() {
   const handleDelCancel = () => {
     setIsDelModalOpen(false);
   };
-  //自定义hook
-  let columns = rolesListHook(showDelModal)
   //删除用户
   let delRole = async (id: number) => {
     let res = await delRoles(id)
     if (res.data.meta.status === 200) {
-      success(res.data.meta.msg)
+      messageApi.success(res.data.meta.msg)
       let idx = data.findIndex((item: RolesDataType): boolean => {
         return item.id === id
       })
@@ -63,41 +113,22 @@ export default function Roles() {
       }
       return
     }
-    error(res.data.meta.msg)
+    messageApi.error(res.data.meta.msg)
   }
-
-  //全局提示
-  const [messageApi, contextHolder] = message.useMessage();
-  const success = (msg: string) => {
-    messageApi.open({
-      type: 'success',
-      content: msg,
-    });
-  };
-  const error = (msg: string) => {
-    messageApi.open({
-      type: 'error',
-      content: msg,
-    });
-  };
-  const warning = (msg: string) => {
-    messageApi.open({
-      type: 'warning',
-      content: msg,
-    });
+  //获取所有角色列表
+  let getRolesList1 = async () => {
+    let res = await getRolesList()
+    setDate(res.data.data)
   }
 
   useEffect(() => {
-    getRolesList().then(res => {
-      console.log(res);
-      setDate(res.data.data)
-    })
+    getRolesList1()
   }, [])
 
   return (
     <div className="roles">
       {contextHolder}
-      <Button type="primary" onClick={showModal}>添加角色</Button>
+      <Button type="primary" onClick={() => showModal()}>添加角色</Button>
       <Table
         bordered={true}
         style={{ marginTop: '20px' }}
@@ -110,7 +141,7 @@ export default function Roles() {
         }}
         dataSource={data}
       />
-      <Modal title="添加角色" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText={'确认添加'} cancelText={'取消'}>
+      <Modal title={record ? '编辑角色' : "添加角色"} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText={record ? "确认修改" : '确认添加'} cancelText={'取消'}>
         <Form
           form={form}
           name="basic"
