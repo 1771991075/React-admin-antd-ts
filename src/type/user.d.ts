@@ -41,7 +41,7 @@ interface DataType {
     id: number;
     username: string;
     email: string;
-    mobile: number;
+    mobile: string;
     role_name: string;
     mg_state: boolean;
 }
@@ -58,4 +58,11 @@ interface SetUsersType{
     password:string,
     email?:string,
     mobile?:string | number
+}
+
+//修改用户类型
+interface UpdateUserType {
+    username?:string,
+    email?:string,
+    mobile?:string
 }

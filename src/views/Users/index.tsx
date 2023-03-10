@@ -1,8 +1,8 @@
 import { Input, Button, Modal, Table, Pagination, Form, message, Space, Switch } from 'antd';
 import type { PaginationProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useState, useEffect } from 'react';
-import { getUserList, setUsers, delUsers, updateUserState } from '../../api/user';
+import { useState, useEffect, useRef } from 'react';
+import { getUserList, setUsers, delUsers, updateUserState ,updateUsers } from '../../api/user';
 import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
 import './index.css';
 const { Search } = Input;
@@ -68,10 +68,11 @@ export default function Users() {
     let [page, setPage] = useState(1)
     let [pageSize, setPageSize] = useState(5)
     let [query, setQuery] = useState('')
-    //修改用户信息
-    let [changeUsername, setChangeUsername] = useState('')
-    let [changeEmail, setChangeEmail] = useState('')
-    let [changeMobile, setChangeMobile] = useState('')
+    //添加用户表单实例
+    const [form] = Form.useForm();
+    //创建修改用户表单实例
+    const changeForm:{current:any} = useRef();
+    let [record,setRecord] = useState<DataType | null>(null);
     //添加用户模态框
     const [isModalOpen, setIsModalOpen] = useState(false);
     //修改用户模态框
@@ -82,28 +83,34 @@ export default function Users() {
     //点击显示添加用户模态框
     const showModal = () => { setIsModalOpen(true) };
     const handleOk = () => { form.submit() };
-    const handleCancel = () => { setIsModalOpen(false) };
+    const handleCancel = () => { 
+        form.resetFields()
+        setIsModalOpen(false) 
+    };
     //解构提示框
     const [messageApi, contextHolder] = message.useMessage();
     //点击显示修改用户模态框
-    const showChangeUserModal = (record: any) => {
-        setChangeUsername(record.username)
-        setChangeEmail(record.email)
-        setChangeMobile(record.mobile)
+    const showChangeUserModal =(record:DataType) => {
+        setRecord(record)
         setChangeUserModalOpen(true)
     };
-    //修改用户信息输入框清空
-    const removeChangeUser = () => {
-        setChangeUsername('')
-        setChangeEmail('')
-        setChangeMobile('')
-    }
+    //点击确认修改的回调
     const handleChangeUserOk = () => {
-        removeChangeUser()
-        setChangeUserModalOpen(false);
+        //提交修改表单
+        changeForm.current.submit()
     };
+    //修改成功之后的回调
+    const onUpdate = async (values: UpdateUserType) => {
+        if(record){
+            let res = await updateUsers(record.id,values)
+            messageApi.success(res.data.meta.msg)
+            setChangeUserModalOpen(false);
+            getDataList()
+        }
+    };
+    //点击取消修改的回调
     const handleChangeUserCancel = () => {
-        removeChangeUser()
+        changeForm.current.resetFields()
         setChangeUserModalOpen(false);
     };
     //发送请求添加用户
@@ -111,13 +118,12 @@ export default function Users() {
         let res = await setUsers(data)
         if (res.data.meta.status === 201) {
             messageApi.success(res.data.meta.msg)
+            form.resetFields()
             setIsModalOpen(false);
             return
         }
         messageApi.error(res.data.meta.msg)
     }
-    //添加用户
-    const [form] = Form.useForm();
     //提交成功之后的回调
     const onFinish = (values: any) => {
         console.log('Success:', values);
@@ -176,8 +182,15 @@ export default function Users() {
     };
 
     useEffect(() => {
+        if(record){
+            changeForm.current.setFieldsValue({
+                username:record.username,
+                email:record.email,
+                mobile:record.mobile
+            })
+        }
         getDataList()
-    }, [page, pageSize, query])
+    }, [page, pageSize, query, record])
 
     return (
         <div className='users'>
@@ -214,14 +227,19 @@ export default function Users() {
                         <Form.Item
                             label="邮箱"
                             name="email"
-                            rules={[{ required: true, message: '请输入邮箱!' }]}
+                            rules={[{ required: true, message: '请输入邮箱!',type:'email' }]}
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
                             label="手机号"
                             name="mobile"
-                            rules={[{ required: true, message: '请输入手机号!' }]}
+                            rules={[{ required: true,validator:(_,value:number | string)=>{
+                                if(/^1[3456789]\d{9}$/.test(value as string)){
+                                    return Promise.resolve()
+                                }
+                                return  Promise.reject("请输入正确手机号码")
+                            }}]}
                         >
                             <Input />
                         </Form.Item>
@@ -234,14 +252,12 @@ export default function Users() {
             </div>
             <Modal title="修改信息" open={changeUserModalOpen} onOk={handleChangeUserOk} onCancel={handleChangeUserCancel} okText={'确认修改'} cancelText={'取消'}>
                 <Form
-                    form={form}
+                    ref={changeForm}
                     name="basic"
                     labelCol={{ span: 5 }}
                     wrapperCol={{ span: 16 }}
                     style={{ maxWidth: 600 }}
-                    initialValues={{ username: changeUsername, email: changeEmail, mobile: changeMobile, remember: true }}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
+                    onFinish={onUpdate}
                     autoComplete="off"
                 >
                     <Form.Item
