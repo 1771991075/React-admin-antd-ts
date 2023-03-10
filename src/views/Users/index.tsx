@@ -1,21 +1,72 @@
-import { Input, Button, Modal, Table, Pagination, Form, message } from 'antd';
+import { Input, Button, Modal, Table, Pagination, Form, message, Space, Switch } from 'antd';
 import type { PaginationProps } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { useState, useEffect } from 'react';
-import { getUserList, setUsers, delUsers } from '../../api/user';
-//引入自定义hooks
-import usersListTabel from './hooks/usersList';
+import { getUserList, setUsers, delUsers, updateUserState } from '../../api/user';
+import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
 import './index.css';
-
 const { Search } = Input;
 export default function Users() {
+    const columns: ColumnsType<DataType> = [
+        {
+            title: '用户ID',
+            dataIndex: 'id',
+            width: 100
+        },
+        {
+            title: '用户名',
+            dataIndex: 'username',
+            width: 150
+        },
+        {
+            title: '邮箱',
+            dataIndex: 'email',
+        },
+        {
+            title: '电话',
+            dataIndex: 'mobile',
+        },
+        {
+            title: '角色',
+            dataIndex: 'role_name',
+        },
+        {
+            title: '状态',
+            dataIndex: 'mg_state',
+            render(text: boolean, record: DataType) {
+                return (
+                    <Switch checked={text} onChange={async (value) => {
+                        let res: ResponsType = await updateUserState(record.id, value)
+                        if (res.data.meta.status === 200) {
+                            messageApi.success(res.data.meta.msg)
+                        }else{
+                            messageApi.error(res.data.meta.msg)
+                        }
+                    }} />
+                )
+            }
+        },
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: 300,
+            render: (_, record: DataType) => (
+                <Space size="middle" >
+                    <Button type="primary" size='small' icon={<FormOutlined />} onClick={() => showChangeUserModal(record)}>编辑</Button>
+                    <Button size='small' type="primary" danger icon={<DeleteOutlined />} onClick={() => showDelModal(record.id)}>删除</Button>
+                    <Button type="primary" size='small' icon={<SettingOutlined />}>分配角色</Button>
+                </Space>
+            ),
+        },
+    ];
     //当前用户列表
     let [data, setData] = useState([])
-    let [data1, setData1] = useState([])
     //总共条数
     let [total, setTotal] = useState(0)
     //当前页数和当前每页数量
     let [page, setPage] = useState(1)
     let [pageSize, setPageSize] = useState(5)
+    let [query, setQuery] = useState('')
     //修改用户信息
     let [changeUsername, setChangeUsername] = useState('')
     let [changeEmail, setChangeEmail] = useState('')
@@ -26,11 +77,13 @@ export default function Users() {
     const [changeUserModalOpen, setChangeUserModalOpen] = useState(false);
     //删除用户模态框
     const [isDelModalOpen, setIsDelModalOpen] = useState(false);
-    let [delUserId,setDelUserId] = useState(0)
+    let [delUserId, setDelUserId] = useState(0)
     //点击显示添加用户模态框
     const showModal = () => { setIsModalOpen(true) };
     const handleOk = () => { form.submit() };
     const handleCancel = () => { setIsModalOpen(false) };
+    //解构提示框
+    const [messageApi, contextHolder] = message.useMessage();
     //点击显示修改用户模态框
     const showChangeUserModal = (record: any) => {
         setChangeUsername(record.username)
@@ -47,7 +100,6 @@ export default function Users() {
     const handleChangeUserOk = () => {
         removeChangeUser()
         setChangeUserModalOpen(false);
-
     };
     const handleChangeUserCancel = () => {
         removeChangeUser()
@@ -57,11 +109,11 @@ export default function Users() {
     const setUser = async (data: SetUsersType) => {
         let res = await setUsers(data)
         if (res.data.meta.status === 201) {
-            success(res.data.meta.msg)
+            messageApi.success(res.data.meta.msg)
             setIsModalOpen(false);
             return
         }
-        error(res.data.meta.msg)
+        messageApi.error(res.data.meta.msg)
     }
     //添加用户
     const [form] = Form.useForm();
@@ -73,31 +125,11 @@ export default function Users() {
     //提交失败后的回调
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
-        warning(errorInfo.errorFields[0].errors)
+        messageApi.warning(errorInfo.errorFields[0].errors)
     };
 
-    const [messageApi, contextHolder] = message.useMessage();
-    //提示框
-    const success = (msg: string) => {
-        messageApi.open({
-            type: 'success',
-            content: msg,
-        });
-    };
-    const error = (msg: string) => {
-        messageApi.open({
-            type: 'error',
-            content: msg,
-        });
-    };
-    const warning = (msg: string) => {
-        messageApi.open({
-            type: 'warning',
-            content: msg,
-        });
-    };
     //删除用户模态框
-    const showDelModal = (id:number) => {
+    const showDelModal = (id: number) => {
         setDelUserId(id)
         setIsDelModalOpen(true);
     };
@@ -112,52 +144,45 @@ export default function Users() {
     let delUser = async (id: number) => {
         let res = await delUsers(id)
         if (res.data.meta.status === 200) {
-            success(res.data.meta.msg)
-            let idx = data.findIndex((item:DataType):boolean=>{
+            messageApi.success(res.data.meta.msg)
+            let idx = data.findIndex((item: DataType): boolean => {
                 return item.id === id
             })
-            if(idx !== -1){
+            if (idx !== -1) {
                 let newState = JSON.parse(JSON.stringify(data))
-                newState.splice(idx,1)
+                newState.splice(idx, 1)
                 setData(newState)
-                setData1(newState)
             }
             return
         }
-        error(res.data.meta.msg)
+        messageApi.error(res.data.meta.msg)
     }
-
-    //调用自定义hooks
-    let columns = usersListTabel(showChangeUserModal, showDelModal)
+    //获取用户列表
+    let getDataList = async () => {
+        let data1: UsersListParams = {
+            query,
+            pagenum: page,
+            pagesize: pageSize
+        }
+        let res: ResponsType = await getUserList(data1)
+        setData(res.data.data.users)
+        setTotal(res.data.data.total)
+    }
     //点击切换页码
     let onChange: PaginationProps['onChange'] = (page, pageSize) => {
         setPage(page)
         setPageSize(pageSize)
     };
-    //点击搜索用户
-    const onSearch = (e: any) => {
-        if (!e.target.value) {
-            setData1(data)
-        }
-        let searchArr = data.filter((item: DataType) => {
-            return item.username.includes(e.target.value)
-        })
-        setData1(searchArr)
-    };
 
     useEffect(() => {
-        getUserList(page, pageSize).then(res => {
-            setData(res.data.data.users)
-            setData1(res.data.data.users)
-            setTotal(res.data.data.total)
-        })
-    }, [page, pageSize])
+        getDataList()
+    }, [page, pageSize, query])
 
     return (
         <div className='users'>
             {contextHolder}
             <div className='users_search'>
-                <Search placeholder="请输入内容" onChange={(e) => onSearch(e)} style={{ width: 300 }} />
+                <Search placeholder="请输入内容" onChange={(e) => setQuery(e.target.value)} style={{ width: 300 }} />
                 <Button type="primary" style={{ marginLeft: '15px' }} onClick={showModal} htmlType="submit">添加用户</Button>
                 <Modal title="添加用户" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText={'确认添加'} cancelText={'取消'}>
                     <Form
@@ -203,8 +228,8 @@ export default function Users() {
                 </Modal>
             </div>
             <div className='users_tabel'>
-                <Table columns={columns} dataSource={data1} sticky={true} bordered={true} pagination={false} style={{ marginTop: '20px' }} rowKey={(record): any => record.id} scroll={{ x: 1200 }} />
-                <Pagination showQuickJumper defaultPageSize={pageSize} current={page} total={total} pageSizeOptions={[5, 10, 20, 50]} onChange={onChange} showSizeChanger={true} style={{ marginTop: '20px' }} />
+                <Table columns={columns} dataSource={data} sticky={true} bordered={true} pagination={false} style={{ marginTop: '20px' }} rowKey={(record): any => record.id} scroll={{ x: 1200 }} />
+                <Pagination showQuickJumper defaultPageSize={pageSize} current={page} total={total} pageSizeOptions={[5, 10, 20, 50]} onChange={onChange} showSizeChanger style={{ marginTop: '20px' }} />
             </div>
             <Modal title="修改信息" open={changeUserModalOpen} onOk={handleChangeUserOk} onCancel={handleChangeUserCancel} okText={'确认修改'} cancelText={'取消'}>
                 <Form
@@ -245,7 +270,6 @@ export default function Users() {
             <Modal title="注意" open={isDelModalOpen} onOk={handleDelOk} onCancel={handleDelCancel} okText={'确认删除'} cancelText={'取消'}>
                 <p>您确定要删除当前用户吗?</p>
             </Modal>
-
         </div>
     )
 }

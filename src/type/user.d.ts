@@ -28,6 +28,13 @@ interface MenuListType {
     children:MenuListType[]
 }
 
+//发送用户列表请求的数据类型
+interface UsersListParams {
+    pagenum:number,
+    pagesize:number,
+    query?:string
+}
+
 //用户列表
 interface DataType {
     key: string;

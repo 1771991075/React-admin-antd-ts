@@ -24,7 +24,8 @@ let http = (url:string,method:string,data:DataParams={},headers?:AxiosHeaders) =
     return axios({
         url,
         method,
-        data,
+        params:method==='get'?data:null,
+        data:method!=='get'?data:null,
         headers
     })
 }

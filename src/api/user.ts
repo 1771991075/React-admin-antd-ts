@@ -6,7 +6,10 @@ let userLogin = (data:UserLoginParams):Promise<any>=> http(`login`,"post",data);
 let getMenus = ():Promise<any>=> http(`menus`,'get')
 
 //请求用户列表
-let getUserList = (pagenum:number,pagesize:number,query?:string) =>http(`users?pagenum=${pagenum}&pagesize=${pagesize}&query=`,'get')
+let getUserList = (data:UsersListParams):Promise<any> =>http(`users`,'get',data)
+
+//修改用户状态
+let updateUserState = ( uId:number, type:boolean):Promise<any>=>http(`users/${uId}/state/${type}`,'put')
 
 //添加用户
 let setUsers = (data:SetUsersType):Promise<any> =>http(`users`,'post',data)
@@ -19,5 +22,6 @@ export {
     getMenus,
     getUserList,
     setUsers,
-    delUsers
+    delUsers,
+    updateUserState
 }
