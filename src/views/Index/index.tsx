@@ -154,6 +154,7 @@ const Index: React.FC = () => {
             margin: '0px 16px 24px 16px',
             padding: 24,
             minHeight: 280,
+            minWidth: 1000,
             background: colorBgContainer,
           }}
         >
