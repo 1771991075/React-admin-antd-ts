@@ -39,6 +39,7 @@ export default function Users() {
                         let res: ResponsType = await updateUserState(record.id, value)
                         if (res.data.meta.status === 200) {
                             messageApi.success(res.data.meta.msg)
+                            getDataList()
                         }else{
                             messageApi.error(res.data.meta.msg)
                         }
