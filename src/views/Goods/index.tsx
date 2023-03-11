@@ -4,8 +4,10 @@ import { FormOutlined, DeleteOutlined ,ExclamationCircleOutlined } from '@ant-de
 import type { ColumnsType } from 'antd/es/table';
 import type { PaginationProps } from 'antd';
 import { getGoodsList ,deleteGoods } from '../../api/goods';
+import { useNavigate } from 'react-router-dom';
 const { Search } = Input;
 export default function Goods() {
+  let navigate = useNavigate()
   //商品列表
   let [goodsList, setGoodsList] = useState<TableGoodsType[]>([])
   //单个商品属性
@@ -101,7 +103,7 @@ export default function Goods() {
     <div>
       <div style={{ marginBottom: '20px' }}>
         <Search placeholder="请输入内容" onChange={(e) => setQuery(e.target.value)} style={{ width: 300 }} />
-        <Button type="primary" style={{ marginLeft: '20px' }} onClick={() => { }}>添加商品</Button>
+        <Button type="primary" style={{ marginLeft: '20px' }} onClick={() => navigate('/index/addgoods')}>添加商品</Button>
       </div>
       <div>
         <Table columns={columns} dataSource={goodsList} rowKey={(record) => record.goods_id} bordered pagination={false} />

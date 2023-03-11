@@ -14,6 +14,7 @@ let Params = lazy(() => import('../views/Params'))
 let Categories = lazy(() => import('../views/Categories'))
 let Orders = lazy(() => import('../views/Orders'))
 let Reports = lazy(() => import('../views/Reports'))
+let AddGoods = lazy(() => import('../views/AddGoods'))
 let NotFound = lazy(()=>import('../component/NotFound'))
 
 let element:RouterObject[] = [
@@ -66,7 +67,12 @@ let element:RouterObject[] = [
                 path:'params',
                 element:<Suspense fallback={<Loading/>}><Params /></Suspense>,
                 author:true
-            }
+            },
+            {
+                path:'addgoods',
+                element:<Suspense fallback={<Loading/>}><AddGoods /></Suspense>,
+                author:true
+            },
         ]
     },
     {
