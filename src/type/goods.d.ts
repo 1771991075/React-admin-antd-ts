@@ -26,9 +26,60 @@ interface TableGoodsType {
     add_time:number,
 }
 
-
+//发送请求获取商品列表类型
 interface GoodsHttpType {
     pagenum:number,
     pagesize:number,
     query:string
 }
+
+//添加商品类型
+interface AddGoodsType {
+    goods_name:string,
+    goods_cat:string | Array,
+    goods_price:number,
+    goods_number:nunmber,
+    goods_weight:number,
+    goods_introduce?:string,
+    pics?:Array<object>,
+    attrs?:AttrsType[]
+}
+interface AttrsType{
+    goods_id:number,
+    attr_id:number,
+    attr_value?:string,
+    add_price?:number | null,
+    attr_name?:string,
+    attr_sel?:string,
+    attr_write?:string,
+    attr_vals?:string
+}
+//发送请求获得商品分类类型
+interface GetgoodsCate {
+    cat_deleted: boolean,
+    cat_id: number,
+    cat_level: number,
+    cat_name: string,
+    cat_pid: number,
+    children?:GetgoodsCate[]
+}
+
+
+//修改后商品分类列表类型
+interface GoodsCateTypeOption {
+    value: string | number;
+    label: string;
+    children?: GoodsCateTypeOption[];
+}
+
+//参数类型
+interface AttrsType1 {
+    attr_id:number,
+    attr_name:string,
+    attr_sel:string,
+    attr_vals:Array,
+    attr_write:string,
+    cat_id:number,
+    delete_time:number | null
+}
+
