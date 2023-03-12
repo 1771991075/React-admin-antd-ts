@@ -20,11 +20,10 @@ axios.interceptors.response.use((res:any)=>{
         message.error(res.data.meta.msg)
         return
     }
-    // if(res.data.meta.status !== 200 && res.data.meta.status !== 201 && res.data.meta.status !== 204){
-    //     window.location.href = '#/login'
-    //     message.error(res.data.meta.msg)
-    //     return 
-    // }
+    if(res.data.meta.status !== 200 && res.data.meta.status !== 201 && res.data.meta.status !== 204){
+        message.error(res.data.meta.msg)
+        return 
+    }
     return res
 })
 
