@@ -11,6 +11,7 @@ let navList:NavListType = {
     "categories":["商品管理","商品分类"],
     "orders":["订单管理","订单列表"],
     "reports":["数据统计","数据报表"],
+    "addgoods":["商品管理","商品列表","添加商品"],
 }
 
 

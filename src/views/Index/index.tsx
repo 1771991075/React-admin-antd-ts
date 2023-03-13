@@ -70,11 +70,14 @@ const Index: React.FC = () => {
   useEffect(() => {
     // 获取当前二级路由路径
     let pathName = location.pathname.split('/')[2]
-    setDefaultSelectedKeys([pathName])
     // 根据当前路由获取对应navList
     let list:string[] = navList[pathName];
     // 更改状态
     dispatch(navActions(list))
+    if(pathName === 'addgoods'){
+      pathName = 'goods'
+    }
+    setDefaultSelectedKeys([pathName])
     // 根据二级路由路径更新默认展开菜单
     switch (pathName) {
       case 'users':
@@ -98,7 +101,7 @@ const Index: React.FC = () => {
       default:
         setDefaultOpenKeys(["101"])
     }
-  }, [location])
+  }, [location,dispatch])
 
   // 调用自定义hooks获取 items
   let items = useMenus()
