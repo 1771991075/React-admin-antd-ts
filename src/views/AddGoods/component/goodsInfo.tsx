@@ -46,21 +46,21 @@ function GoodsInfo(props:any,ref:any){
                 <Form.Item
                     label="商品价格"
                     name="goods_price"
-                    rules={[{ required: true, message: '请输入商品价格',type:"number"}]}
+                    rules={[{ required: true, message: '请输入商品价格'}]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     label="商品重量"
                     name="goods_weight"
-                    rules={[{ required: true, message: '请输入商品重量',type:"number"}]}
+                    rules={[{ required: true, message: '请输入商品重量'}]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     label="商品库存"
                     name="goods_number"
-                    rules={[{ required: true, message: '请输入商品库存',type:"number"}]}
+                    rules={[{ required: true, message: '请输入商品库存'}]}
                 >
                     <Input />
                 </Form.Item>
