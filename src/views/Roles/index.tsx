@@ -1,8 +1,10 @@
 import { Button, Table, Modal, Form, Input, message, Space } from 'antd';
-import { useEffect, useState } from 'react';
-import { getRolesList, setRoles, delRoles, changeRoles } from '../../api/roles';
+import { useEffect, useState, useRef } from 'react';
+import { getRolesList, setRoles, delRoles, changeRoles, getRights } from '../../api/roles';
 import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import RowRender from './component/RowRender';
+import SetRights from './component/set-rights';
 
 export default function Roles() {
   const columns: ColumnsType<RolesDataType> = [
@@ -17,16 +19,23 @@ export default function Roles() {
         <Space size="middle">
           <Button type="primary" size='small' icon={<FormOutlined />} onClick={() => { showModal(record) }}>编辑</Button>
           <Button size='small' type="primary" danger icon={<DeleteOutlined />} onClick={() => showDelModal(record.id)}>删除</Button>
-          <Button type="primary" size='small' icon={<SettingOutlined />}>分配权限</Button>
+          <Button type="primary" size='small' icon={<SettingOutlined />} onClick={() => {
+            setRightsRef.current.init(rigthsList, record.children, record.id);
+          }}>分配权限</Button>
         </Space>
       )
     },
   ];
+  let setRightsRef: { current: any } = useRef();
+  //  权限列表
+  let [rigthsList, setRightsList] = useState<RightsType[]>([]);
   //全局提示
   const [messageApi, contextHolder] = message.useMessage();
   //角色列表
   let [data, setDate] = useState([])
   const [form] = Form.useForm();
+  //定义加载状态
+  let [loading, setLoading] = useState(false);
   //当前选中的角色
   let [record, setRecord] = useState<RolesDataType | null>(null)
   //当前选中的角色id
@@ -117,12 +126,33 @@ export default function Roles() {
   }
   //获取所有角色列表
   let getRolesList1 = async () => {
+    setLoading(true)
     let res = await getRolesList()
     setDate(res.data.data)
+    setLoading(false)
+    //使用三重for循环 修改每个chlidren属性名
+    res.data.data.forEach((item: any) => {
+      item.list = item.children
+      delete item.children
+      item.list.forEach((two: any) => {
+        two.list = two.children
+        delete two.children
+        two.list.forEach((three: any) => {
+          three.list = three.children
+          delete three.children
+        })
+      })
+    })
+  }
+  // 获取所有权限列表
+  let getRightsList = async () => {
+    let res: any = await getRights('tree');
+    setRightsList(res.data.data)
   }
 
   useEffect(() => {
-    getRolesList1()
+    getRolesList1();
+    getRightsList();
   }, [])
 
   return (
@@ -132,12 +162,16 @@ export default function Roles() {
       <Table
         bordered={true}
         style={{ marginTop: '20px' }}
-        rowKey={(record): any => record.id}
+        rowKey={'id'}
         scroll={{ x: 900 }}
         columns={columns}
-        expandable={{
-          // expandedRowRender: (record) => <p style={{ margin: 0 }}><div></div></p>,
-          // rowExpandable: (record) => record.roleName !== 'Not Expandable',
+        loading={loading}
+        expandedRowRender={(record: RolesTableItem) => {
+          return <RowRender record={record} over={(res: ResponsType) => {
+            if (res.data.meta.status === 200) {
+              getRolesList1()
+            }
+          }}></RowRender>
         }}
         dataSource={data}
       />
@@ -170,6 +204,12 @@ export default function Roles() {
       <Modal title="注意" open={isDelModalOpen} onOk={handleDelOk} onCancel={handleDelCancel} okText={'确认删除'} cancelText={'取消'}>
         <p>您确定要删除当前角色吗?</p>
       </Modal>
+      <SetRights ref={setRightsRef} rigthsList={rigthsList} over={(res: ResponsType) => {
+        if (res.data.meta.status === 200) {
+          messageApi.success(res.data.meta.msg)
+          getRolesList1();
+        }
+      }}></SetRights>
     </div>
   )
 }

@@ -18,11 +18,23 @@ let updateRoles = (id:number,data:object) =>http(`users/${id}/role`,'put',data)
 //编辑角色
 let changeRoles = (id:number,data:RolesFormType) =>http(`roles/${id}`,'put',data)
 
+//删除指定权限
+let deleteRoles = (roleId:number,rightId:number)=>http(`roles/${roleId}/rights/${rightId}`,'delete');
+
+//获取权限列表right
+let getRights = ( type:string)=>http(`rights/${type}`,'get');
+
+// 分配权限
+let setRights = (roleId :number,data:SetRightsParams) =>http(`roles/${roleId}/rights`,'post',data);
+
 export {
     getRolesList,
     setRoles,
     delRoles,
     getRightsList,
     updateRoles,
-    changeRoles
+    changeRoles,
+    deleteRoles,
+    getRights,
+    setRights
 }
