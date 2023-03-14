@@ -83,3 +83,27 @@ interface AttrsType1 {
     delete_time:number | null
 }
 
+//商品详情
+interface GoodInfoType {
+    cat_id:number[],
+    goods_name:string,
+    goods_number:number,
+    goods_price:number,
+    goods_weight:number
+}
+
+interface GoodsCateType {
+    type:number[]
+}
+
+//商品静态参数类型
+// interface GoodsParamsType {
+//     attr_id:number,
+//     attr_name:string,
+//     attr_sel:string,
+//     attr_vals:string,
+//     attr_write:string,
+//     cat_id:number,
+//     delete_time
+// }
+
