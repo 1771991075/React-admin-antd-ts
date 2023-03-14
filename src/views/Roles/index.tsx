@@ -15,12 +15,12 @@ export default function Roles() {
       title: '操作',
       dataIndex: '',
       key: 'x',
-      render: (_, record: RolesDataType) => (
+      render: (_, record: RolesTableItem) => (
         <Space size="middle">
           <Button type="primary" size='small' icon={<FormOutlined />} onClick={() => { showModal(record) }}>编辑</Button>
           <Button size='small' type="primary" danger icon={<DeleteOutlined />} onClick={() => showDelModal(record.id)}>删除</Button>
           <Button type="primary" size='small' icon={<SettingOutlined />} onClick={() => {
-            setRightsRef.current.init(rigthsList, record.children, record.id);
+            setRightsRef.current.init(rigthsList, record.list, record.id);
           }}>分配权限</Button>
         </Space>
       )
