@@ -1,33 +1,41 @@
-import { getAttributesList} from '../../../api/goods';
-import { useState ,forwardRef , useEffect} from 'react';
-
-function GoodsParams(props:any,ref:any) {
-  //商品静态参数
-  let [goodsParams,setGoodsParams] = useState<AttrsType1[]>()
-  
-
-  useEffect(()=>{
-    getAttributesList(props.info.cat_id[2],{sel:'many'}).then(res=>{
-      console.log(res);
-      setGoodsParams(res.data.data)
-    })
-  },[])
-
-  return (
-    <div>
-      <div>
-        {
-          goodsParams?.map((item:AttrsType1,index:number)=>{
-            return (
-              <div>
-                  <p>{item.attr_name}</p>
-                  
-              </div>
-            )
-          })
-        }
-      </div>
-    </div>
-  )
+import {Tag,Empty} from 'antd'
+interface PropsType{
+    paramsList:AttrsType1[];
+    removeTag:(index:number,i:number)=>void;
 }
-export default forwardRef(GoodsParams)
+function GoodsParams(props:PropsType){
+    let {paramsList} = props;
+    console.log(paramsList)
+    return (
+        <div>
+            {
+                paramsList.length===0 && <Empty></Empty>
+            }
+            {
+                paramsList.map((item:AttrsType1,index:number)=>{
+                    return (
+                        <div key={index}>
+                            <div>
+                                {item.attr_name}
+                            </div>
+                            <div style={{margin:'20px 0'}}>
+                                {
+                                   (item.attr_vals as string[]).map((attr:string,i:number)=>{
+                                    return (
+                                        <Tag color='blue' closable key={i} onClose={()=>{
+                                            // 删除父组件中的分类参数列表
+                                            props.removeTag(index,i)
+                                        }}>{attr}</Tag>
+                                    )
+                                   })
+                                }
+                            </div>
+                        </div>
+                    )
+                })
+            }
+        </div>
+    )
+}
+
+export default GoodsParams;
