@@ -77,7 +77,7 @@ interface AttrsType1 {
     attr_id:number,
     attr_name:string,
     attr_sel:string,
-    attr_vals:Array,
+    attr_vals:string[] | string,
     attr_write:string,
     cat_id:number,
     delete_time:number | null
@@ -96,14 +96,18 @@ interface GoodsCateType {
     type:number[]
 }
 
-//商品静态参数类型
-// interface GoodsParamsType {
-//     attr_id:number,
-//     attr_name:string,
-//     attr_sel:string,
-//     attr_vals:string,
-//     attr_write:string,
-//     cat_id:number,
-//     delete_time
-// }
 
+interface Attrs{
+    attr_id:number,
+    attr_value:string
+}
+//添加商品类型
+interface AddGoodsParams{
+    goods_name:string,
+    goods_cat:string,
+    goods_price:number,
+    goods_number:number,
+    goods_weight:number,
+    goods_introduce:string,
+    attrs:Attrs[]
+}

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function addOver() {
+export default function AddOver() {
   return (
     <div>addOver</div>
   )
