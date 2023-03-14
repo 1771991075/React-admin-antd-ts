@@ -58,11 +58,11 @@ export default function Goods() {
         console.log(id);
         let res = await deleteGoods(id)
         if(res.data.meta.status === 200){
-          messageApi.success(res.data.meta.msg)
+          message.success(res.data.meta.msg)
           getGoods()
           return
         }
-        messageApi.error(res.data.meta.msg)
+        message.error(res.data.meta.msg)
       }
     });
   };
