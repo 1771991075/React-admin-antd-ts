@@ -162,7 +162,10 @@ export default function AddGoods() {
                         current === 4 && <GoodsContent ref={contentRef}/>
                     }
                     {
-                        current === 5 && <GoodsOver />
+                        current === 5 && <GoodsOver over={()=>{
+                            current=0;
+                            setCurrent(current)
+                        }}/>
                     }
                 </div>
                 <div style={{ textAlign: "center" }}>
