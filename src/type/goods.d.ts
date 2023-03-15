@@ -116,10 +116,17 @@ interface AddGoodsParams{
 interface ParmasUpdateType {
     attr_name:string,
     attr_sel:"only" | "many",
-    attr_vals:string
+    attr_vals?:string
 }
 
 //请求动态或静态参数
 interface CateParamsSelType{
     sel:"only" | "many"
+}
+
+//添加动态参数或者静态属性
+interface AddAttributeType {
+    attr_name:string,
+    attr_sel:'only' | 'many',
+    attr_vals?:string
 }

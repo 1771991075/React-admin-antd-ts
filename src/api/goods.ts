@@ -18,11 +18,19 @@ let getAttributesList = (id:number,data:CateParamsSelType) =>http(`categories/${
 //编辑提交标签参数
 let updateParams = (id:number,attrId:number,data:ParmasUpdateType)=> http(`categories/${id}/attributes/${attrId}`,'put',data)
 
+//添加动态参数或者静态属性
+let setAttribute = (id:number,data:AddAttributeType) =>http(`categories/${id}/attributes`,'post',data)
+
+//删除参数
+let delAttribute = (id:number,attrid:number) =>http(`categories/${id}/attributes/${attrid}`,'delete')
+
 export {
     getGoodsList,
     deleteGoods,
     addGoods,
     getGoodsCateList,
     getAttributesList,
-    updateParams
+    updateParams,
+    setAttribute,
+    delAttribute
 }
