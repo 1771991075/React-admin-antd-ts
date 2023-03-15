@@ -26,9 +26,11 @@ export default function TableList(props: PropsType) {
         setIsModalOpen(true);
     };
     const handleOk = () => {
+        setUpdateTab(null)
         setIsModalOpen(false);
     };
     const handleCancel = () => {
+        setUpdateTab(null)
         form.resetFields()
         setIsModalOpen(false);
     };
@@ -228,7 +230,7 @@ export default function TableList(props: PropsType) {
                     )
                 }}></Table>
             </div>
-            <Modal footer={false} title={
+            <Modal footer={null} title={
                 (props.sel === 'many' && updateTab) ? '编辑动态参数' : (props.sel === 'only' && updateTab) ? '编辑静态属性' : (props.sel === 'only') ? '添加静态属性' : '添加动态参数'} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     form={form}

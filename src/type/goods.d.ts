@@ -130,3 +130,15 @@ interface AddAttributeType {
     attr_sel:'only' | 'many',
     attr_vals?:string
 }
+
+//添加分类
+interface AddCateType {
+    cat_name:string,
+    cat_level:number,
+    cat_pid:number,
+}
+
+//编辑分类
+interface UpdateCateType {
+    cat_name:string
+}

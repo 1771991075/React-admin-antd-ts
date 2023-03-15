@@ -24,6 +24,15 @@ let setAttribute = (id:number,data:AddAttributeType) =>http(`categories/${id}/at
 //删除参数
 let delAttribute = (id:number,attrid:number) =>http(`categories/${id}/attributes/${attrid}`,'delete')
 
+//添加分类
+let setCate = (data:AddCateType) =>http(`categories`,'post',data)
+
+//编辑提交分类
+let updateCate = (id:number,data:UpdateCateType) =>http(`categories/${id}`,'put',data)
+
+//删除分类
+let delCate = (id:number) =>http(`categories/${id}`,'delete')
+
 export {
     getGoodsList,
     deleteGoods,
@@ -32,5 +41,8 @@ export {
     getAttributesList,
     updateParams,
     setAttribute,
-    delAttribute
+    delAttribute,
+    setCate,
+    updateCate,
+    delCate
 }
