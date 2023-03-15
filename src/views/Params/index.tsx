@@ -1,133 +1,46 @@
-import { Button, Alert, Cascader, Tabs, Table } from 'antd';
-import { useState, useEffect, useMemo, } from 'react';
-import { getGoodsCateList, getAttributesList } from '../../api/goods';
+import { Button, Alert, Cascader, Tabs, message } from 'antd';
+import { useState, useEffect } from 'react';
+import { getGoodsCateList } from '../../api/goods';
 import type { TabsProps } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import TableList from './component/TableList';
 
 export default function Params() {
   //商品分类列表
-  let [goodsCateList, setGoodsCateList] = useState<GetgoodsCate[]>([]);
-  //商品静态参数列表
-  let [goodsAttributesList, setGoodsAttributesList] = useState([])
-  //商品动态参数列表
-  let [goodsAttributesList2, setGoodsAttributesList2] = useState([])
-  let [data, setData] = useState<AttrsType1[]>()
-  //处理商品分类
-  let NEWoptions = useMemo(() => {
-    let Items: GoodsCateTypeOption[] = []
-    if (goodsCateList.length !== 0) {
-      goodsCateList.forEach((item: GetgoodsCate) => {
-        let obj: GoodsCateTypeOption = {
-          value: item.cat_id,
-          label: item.cat_name,
-          children: [],
-        }
-        if (item.children) {
-          item.children.forEach((two: GetgoodsCate) => {
-            let twoObj: GoodsCateTypeOption = {
-              value: two.cat_id,
-              label: two.cat_name,
-              children: [],
-            }
-            obj.children?.push(twoObj)
-            if (two.children) {
-              two.children.forEach((three: GetgoodsCate) => {
-                let threeObj: GoodsCateTypeOption = {
-                  value: three.cat_id,
-                  label: three.cat_name,
-                }
-                twoObj.children?.push(threeObj)
-              })
-            }
-          })
-        }
-        Items.push(obj)
-      });
+  let [options, setOpinons] = useState<GetgoodsCate[]>([]);
+  //当前选中的分类id列表
+  let [cate_id, setCate_id] = useState<number[]>([])
+
+  //选择分类列表
+  let onChange = (value: number[]) => {
+    console.log(value)
+    if (value.length < 3) {
+      message.warning("请选择三级分类！！！")
+      setCate_id([]);
+      return
     }
-    return Items
-  }, [goodsCateList])
-  //表格表头
-  const columns: ColumnsType<AttrsType1> = [
-    {
-      title: '#',
-      dataIndex: 'attr_id',
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: '属性名称',
-      dataIndex: 'attr_name',
-    },
-    {
-      title: '操作',
-      dataIndex: 'actions',
-      render: () => {
-        return (
-          <>
-            <Button type='primary' icon={<FormOutlined />} size="small" style={{ marginRight: '10px' }}>编辑</Button>
-            <Button type='primary' icon={<DeleteOutlined />} danger size="small">删除</Button>
-          </>
-        )
-      }
-    }
-  ];
+    setCate_id(value)
+  }
 
   const items: TabsProps['items'] = [
     {
-      key: 'many',
+      key: '1',
       label: `动态参数`,
-      children: <div>
-        <Button type='primary'>添加参数</Button>
-        <Table
-          rowKey={(record)=>record.attr_id}
-          style={{ marginTop: '20px' }}
-          bordered
-          columns={columns}
-          // expandable={{
-          //   expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
-          //   rowExpandable: (record) => record.name !== 'Not Expandable',
-          // }}
-          dataSource={data}
-        />
-      </div>,
+      children: <TableList sel='many' cate_ids={cate_id}></TableList>,
     },
     {
-      key: 'only',
+      key: '2',
       label: `静态属性`,
-      children: <div>
-        <Button type='primary'>添加属性</Button>
-        <Table
-          rowKey={(record)=>record.attr_id}
-          style={{ marginTop: '20px' }}
-          bordered
-          columns={columns}
-          // expandable={{
-          //   expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
-          //   rowExpandable: (record) => record.name !== 'Not Expandable',
-          // }}
-          dataSource={data}
-        />
-      </div>
-    }
+      children: <TableList sel='only' cate_ids={cate_id}></TableList>,
+    },
   ];
-  //选择商品分类
-  const onChange = (value: any) => {
-    console.log(value);
-    //获取静态属性
-    getAttributesList(value[2], { sel: 'many' }).then(res => {
-      setGoodsAttributesList(res.data.data)
-    })
-    //获取动态属性
-    getAttributesList(value[2], { sel: 'many' }).then(res => {
-      setGoodsAttributesList2(res.data.data)
-    })
-  };
+  //获取分类列表
+  let getDateList = async () => {
+    let res = await getGoodsCateList()
+    setOpinons(res.data.data)
+  }
 
   useEffect(() => {
-    getGoodsCateList().then(res => {
-      console.log(res.data.data);
-      setGoodsCateList(res.data.data);
-    })
+    getDateList()
   }, [])
 
   return (
@@ -141,15 +54,9 @@ export default function Params() {
         closable
       />
       <div>
-        选择商品分类:<Cascader options={NEWoptions} onChange={(values) => onChange(values)} placeholder="请选择商品分类" style={{ marginLeft: '20px' }} />
+        选择商品分类:&nbsp;<Cascader options={options} onChange={(value: number[] | any) => onChange(value)} placeholder="请选择商品分类" fieldNames={{ label: "cat_name", value: "cat_id", children: "children" }} value={cate_id} />
       </div>
-      <Tabs defaultActiveKey="1" items={items} onChange={(key: string) => {
-        if (key === 'many') {
-          setData(goodsAttributesList2)
-        } else {
-          setData(goodsAttributesList)
-        }
-      }} />
+      <Tabs defaultActiveKey="1" items={items} />
     </div>
   )
 }

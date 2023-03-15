@@ -12,14 +12,17 @@ let addGoods = (data:AddGoodsParams):Promise<any> =>http(`goods`,'post',data)
 //获取商品分类列表
 let getGoodsCateList = () =>http(`categories?type`,'get') 
 
-//获取参数列表静态
-let getAttributesList = (id:number,data:any) =>http(`categories/${id}/attributes`,'get',data)
+//获取参数列表
+let getAttributesList = (id:number,data:CateParamsSelType) =>http(`categories/${id}/attributes`,'get',data)
 
+//编辑提交标签参数
+let updateParams = (id:number,attrId:number,data:ParmasUpdateType)=> http(`categories/${id}/attributes/${attrId}`,'put',data)
 
 export {
     getGoodsList,
     deleteGoods,
     addGoods,
     getGoodsCateList,
-    getAttributesList
+    getAttributesList,
+    updateParams
 }
