@@ -9,6 +9,8 @@ function GoodsInfo(props:any,ref:any){
         console.log(value)
         if(value.length<3){
             messageApi.error("请选择三级分类")
+            // 将表单属性cat_id清空
+            formRef.current.setFieldsValue({cat_id:[]})
             return
         }
     }
