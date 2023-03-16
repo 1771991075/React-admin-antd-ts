@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { FormOutlined, SettingOutlined } from '@ant-design/icons';
 import { getOrderList, updateOrder, getTimer } from '../../api/orders';
 import { useEffect, useState } from 'react';
+import moment from 'moment';
 const { Search } = Input;
 export default function Orders() {
   //表格数据
@@ -121,6 +122,13 @@ export default function Orders() {
     {
       title: '下单时间',
       dataIndex: 'create_time',
+      render(_,record){
+        return (
+          <div>
+            {moment((record.create_time as number) * 1000).format('YYYY-MM-DD HH:mm:ss')}
+          </div>
+        )
+      }
     },
     {
       title: '操作',

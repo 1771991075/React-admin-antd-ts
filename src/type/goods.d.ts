@@ -23,7 +23,7 @@ interface TableGoodsType {
     goods_name:string,
     goods_price:number,
     goods_weight:number,
-    add_time:number,
+    add_time:number | string,
 }
 
 //发送请求获取商品列表类型

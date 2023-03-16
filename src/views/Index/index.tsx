@@ -106,8 +106,8 @@ const Index: React.FC = () => {
   // 调用自定义hooks获取 items
   let items = useMenus()
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed} style={{ height: '100vh',position:'sticky',top:'0px' }}>
         <div className="logo">
           <img src={kun} alt="" />
           <p>{username}管理员</p>

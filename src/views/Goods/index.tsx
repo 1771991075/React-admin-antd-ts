@@ -2,6 +2,7 @@ import { Input, Space, Button, Table, Pagination, Modal, message} from 'antd';
 import { useEffect, useState } from 'react';
 import { FormOutlined, DeleteOutlined ,ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import moment from 'moment';
 import type { PaginationProps } from 'antd';
 import { getGoodsList ,deleteGoods } from '../../api/goods';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +25,11 @@ export default function Goods() {
   const [messageApi, contextHolder1] = message.useMessage();
   //商品列表数据
   const columns: ColumnsType<TableGoodsType> = [
-    { title: '#', dataIndex: 'goods_id' },
+    { title: '#', dataIndex: 'index',render(text: any, record: any, index: number) {
+      return (
+        <div>{index + 1}</div>
+      )
+    }, },
     { title: '商品名称', dataIndex: 'goods_name', width: 600 },
     { title: '商品价格', dataIndex: 'goods_price' },
     { title: '商品重量', dataIndex: 'goods_weight' },
@@ -55,7 +60,6 @@ export default function Goods() {
       cancelText: '取消',
       //删除商品
       onOk: async()=>{
-        console.log(id);
         let res = await deleteGoods(id)
         if(res.data.meta.status === 200){
           message.success(res.data.meta.msg)
@@ -77,12 +81,14 @@ export default function Goods() {
     //处理数据
     let newData: TableGoodsType[] = [];
     res.data.data.goods.forEach((item: TableGoodsType) => {
+      //处理时间戳
+      let endTime = moment((item.add_time as number) * 1000).format('YYYY-MM-DD HH:mm:ss')
       let obj = {
         goods_id: item.goods_id,
         goods_name: item.goods_name,
         goods_price: item.goods_price,
         goods_weight: item.goods_weight,
-        add_time: item.add_time,
+        add_time: endTime,
       }
       newData.push(obj)
     })
