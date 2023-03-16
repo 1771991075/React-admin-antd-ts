@@ -12,7 +12,6 @@ export default function Params() {
 
   //选择分类列表
   let onChange = (value: number[]) => {
-    console.log(value)
     if (value.length < 3) {
       message.warning("请选择三级分类！！！")
       setCate_id([]);
