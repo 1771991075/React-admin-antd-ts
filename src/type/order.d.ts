@@ -29,3 +29,20 @@ interface OrderInfoType {
     create_time:number,
     update_time:number
 }
+
+//修改订单
+interface UpdateOrderType {
+    is_send:string,
+    order_pay:string,
+    order_price:number,
+    order_number:string,
+    pay_status:string
+}
+
+//物流信息
+interface TimerType {
+    time:string,
+    ftime:string,
+    context:string,
+    location:string
+}
