@@ -6,7 +6,7 @@
   ![tip](https://badgen.net/badge/antd/v5.3.0/orange)
   ![tip](https://badgen.net/badge/redux/v4.2.1/purple)
   ![tip](https://badgen.net/badge/echarts/v5,4,1/cyan)
-  ![tip](https://badgen.net/badge/LICENSE/MIT/black)
+  ![tip](https://badgen.net/badge/LICENSE/MIT/green)
   ![tip](https://badgen.net/badge/github/green?icon=github)
   
 ## Clone该项目
