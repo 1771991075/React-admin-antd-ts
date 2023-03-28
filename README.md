@@ -6,18 +6,22 @@
   ![tip](https://badgen.net/badge/antd/v5.3.0/orange)
   ![tip](https://badgen.net/badge/redux/v4.2.1/grey)
   ![tip](https://badgen.net/badge/echarts/v5,4,1/black)
+  ![tip](https://badgen.net/badge/LICENSE/MIT/black)
+  ![tip](https://badgen.net/badge/GitHub/green?icon=github)
   
 ## Clone该项目
-  git clone https://github.com/...
+  `git clone https://github.com/...`
   
 ## 在项目根目录下安装依赖
-  npm install
-  yarn
+  [
+    `npm install`
+    `yarn`
+  ]
   
 ## 运行
-  npm start
+  `npm start`
   
 ## 打包
-  npm run build
+  `npm run build`
   
 
