@@ -1,5 +1,5 @@
 ## 介绍
-  一款电商的后台管理平台
+  一款电商的后台管理系统
   
   ![tip](https://badgen.net/badge/react/v18.2.0/green)
   ![tip](https://badgen.net/badge/npm/v1.22.19/blue)
